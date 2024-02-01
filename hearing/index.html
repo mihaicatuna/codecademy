@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Connection Type Averages</title>
+    
+</head>
+<body>
+    <h1>Speech quality in the presence of background noise</h1>
+    
+    <canvas id="canvas" width="500" height="200" style="margin-top: 50px;"></canvas>
+    <script>
+        // Your dataset
+        const dataset = `Ring1.5\tNoBGN\t4.1\t4.7\t4.2
+Ring1.5\tMensa\t2.8\t3.7\t2.9
+Ring1.5\tDistr\t2.6\t2.6\t3.3
+Ring1.5\tCallC\t2.6\t3.6\t2.8
+PNS_male\tNoBGN\t4.2\t4.4\t4.4
+PNS_male\tMensa\t3.2\t4.3\t3.2
+PNS_male\tDistr\t3.3\t4.2\t3.3
+PNS_male\tCallC\t3.2\t4.3\t3.2
+PNS_female\tNoBGN\t4.0\t4.4\t4.2
+PNS_female\tMensa\t3.0\t3.8\t3.1
+PNS_female\tDistr\t3.0\t3.8\t3.2
+PNS_female\tCallC\t3.0\t3.9\t3.1
+Direct\tNoBGN\t3.3\t3.5\t3.7
+Direct\tMensa\t2.0\t1.9\t2.8
+Direct\tDistr\t2.2\t2.2\t2.9
+Direct\tCallC\t2.0\t2.0\t2.8
+        `;
+    
+        // Convert the dataset into an array of arrays
+        const rows = dataset.trim().split('\n').map(row => row.split('\t'));
+    
+        // Extract labels and data for each scenario
+        const measurement = rows.map(row => row[1]);
+        const scenario = rows.map(row => row[0]);
+        const data = rows.map(row => row.slice(2).map(Number));
+    
+        // Create a bar chart for each measurement scenario
+        const uniqueMeasurements = [...new Set(measurement)];
+   
+        uniqueMeasurements.forEach(measurementName => {
+            const ctx = document.createElement('canvas').getContext('2d');
+            document.body.appendChild(ctx.canvas);
+            const labels = scenario.filter((_, index) => measurement[index] === measurementName);
+            const datasets = data
+                .filter((_, index) => measurement[index] === measurementName)
+                .map((values, dataIndex) => ({
+                    label: labels[dataIndex],
+                    data: values,
+                    backgroundColor: getRandomColor(labels[dataIndex]),
+                    borderWidth: 1,
+                }));
+            console.log(measurementName);
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['N-MOS', 'S-MOS', 'G-MOS'],
+                    datasets: datasets,
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Measurement: ${measurementName}`,
+                            font: {
+                                    size: 100, // Adjust the font size as needed
+                                },
+                                },
+                             
+                            },
+                            scales:{
+                            y: {
+                        beginAtZero: false,
+                        min: 1,
+                        max: 5,
+                        },
+                        }
+                        },
+                        
+                    });
+        });
+    
+        function getRandomColor(label) {
+    // Use a consistent color for each label
+    const labelColors = {
+        'PNS_male': '#3498db',
+        'PNS_female': '#e74c3c',
+        'Ring1.5': '#2ecc71',
+        'Direct': '#f59c12',
+    };
+
+    return labelColors[label] || '#000000'; // Default to black if label not found
+}
+    </script>
+    <table>
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Scenario</th>
+                <th>N-MOS (Average)</th>
+                <th>S-MOS (Average)</th>
+                <th>G-MOS (Average)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="4">Ring1.5</td>
+                <td>NoBGN</td>
+                <td data-value="4.1">4.1</td>
+                <td data-value="4.7">4.7</td>
+                <td data-value="4.2">4.2</td>
+            </tr>
+            <tr>
+                <td>Mensa</td>
+                <td data-value="2.8">2.8</td>
+                <td data-value="3.7">3.7</td>
+                <td data-value="2.9">2.9</td>
+            </tr>
+            <tr>
+                <td>Distr</td>
+                <td data-value="2.6">2.6</td>
+                <td data-value="2.6">2.6</td>
+                <td data-value="3.3">3.3</td>
+            </tr>
+            <tr>
+                <td>CallC</td>
+                <td data-value="2.6">2.6</td>
+                <td data-value="3.6">3.6</td>
+                <td data-value="2.8">2.8</td>
+            </tr>
+
+            <tr>
+                <td rowspan="4">PNS_male</td>
+                <td>NoBGN</td>
+                <td data-value="4.2">4.2</td>
+                <td data-value="4.4">4.4</td>
+                <td data-value="4.4">4.4</td>
+            </tr>
+            <tr>
+                <td>Mensa</td>
+                <td data-value="3.2">3.2</td>
+                <td data-value="4.3">4.3</td>
+                <td data-value="3.2">3.2</td>
+            </tr>
+            <tr>
+                <td>Distr</td>
+                <td data-value="3.3">3.3</td>
+                <td data-value="4.2">4.2</td>
+                <td data-value="3.3">3.3</td>
+            </tr>
+            <tr>
+                <td>CallC</td>
+                <td data-value="3.2">3.2</td>
+                <td data-value="4.3">4.3</td>
+                <td data-value="3.2">3.2</td>
+            </tr>
+
+            <tr>
+                <td rowspan="4">PNS_female</td>
+                <td>NoBGN</td>
+                <td data-value="4.0">4.0</td>
+                <td data-value="4.4">4.4</td>
+                <td data-value="4.2">4.2</td>
+            </tr>
+            <tr>
+                <td>Mensa</td>
+                <td data-value="3.0">3.0</td>
+                <td data-value="3.8">3.8</td>
+                <td data-value="3.1">3.1</td>
+            </tr>
+            <tr>
+                <td>Distr</td>
+                <td data-value="3.0">3.0</td>
+                <td data-value="3.8">3.8</td>
+                <td data-value="3.2">3.2</td>
+            </tr>
+            <tr>
+                <td>CallC</td>
+                <td data-value="3.0">3.0</td>
+                <td data-value="3.9">3.9</td>
+                <td data-value="3.1">3.1</td>
+            </tr>
+
+            <tr>
+                <td rowspan="4">Direct</td>
+                <td>NoBGN</td>
+                <td data-value="3.3">3.3</td>
+                <td data-value="3.5">3.5</td>
+                <td data-value="3.7">3.7</td>
+            </tr>
+            <tr>
+                <td>Mensa</td>
+                <td data-value="2.0">2.0</td>
+                <td data-value="1.9">1.9</td>
+                <td data-value="2.8">2.8</td>
+            </tr>
+            <tr>
+                <td>Distr</td>
+                <td data-value="2.2">2.2</td>
+                <td data-value="2.2">2.2</td>
+                <td data-value="2.9">2.9</td>
+            </tr>
+            <tr>
+                <td>CallC</td>
+                <td data-value="2.0">2.0</td>
+                <td data-value="2.0">2.0</td>
+                <td data-value="2.8">2.8</td>
+            </tr>
+        </tbody>
+    </table>
+    <h1>Distractor attenuation</h1>
+    <canvas id="barChartdist" width="400" height="200"></canvas>
+
+
+    <script>
+        const datase = `Direct\tPNS_female\tPNS_male
+    Distractor 0deg\t-19.30\t-10.64\t-9.67
+    Distractor +45deg\t-17.35\t6.06\t-1.95
+    Distractor +90deg\t-16.40\t8.01\t1.67
+    Distractor -90deg\t-22.18\t-16.10\t-16.05
+    Distractor -45deg\t-21.01\t-15.48\t-15.29
+    `;
+    
+        // Convert the datase into an array of arrays
+        const rowss = datase.trim().split('\n').map(row => row.split('\t'));
+    
+        // Extract labels and data for each scenario
+        const labels = rowss.slice(1).map(row => row[0]); // Exclude the first row (column headers) rows
+        const dataa = rowss.slice(1).map(row => row.slice(1).map(value => parseFloat(value.replace(',', '.'))));
+    
+        const ctx = document.getElementById('barChartdist').getContext('2d');
+    
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                
+                labels: labels,
+                datasets: dataa[0].map((_, index) => ({
+                    label: rowss[0][index],
+                    data: dataa.map(row => row[index]),
+                    backgroundColor: getRandomColor(rowss[0][index]),
+                    borderWidth: 1,
+                })),
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    },
+                },
+            },
+        });
+    
+    </script>
+</body>
+</html>
